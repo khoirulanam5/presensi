@@ -5,8 +5,6 @@ class Auth extends CI_Controller {
 
 	public function __construct() {
         parent::__construct();
-        $this->load->library('form_validation');
-        $this->load->library('session');
     }
 
 	public function index() {
@@ -29,14 +27,12 @@ class Auth extends CI_Controller {
                         'nm_pengguna' => $cek->nm_pengguna,
                         'level' => $cek->level
                     ];
-                    
                     $this->session->set_userdata($ses);
 
-                    // Ambil data dari tb_pegawai yang sesuai dengan id_user
                     $pegawai = $this->db->get_where('tb_pegawai', ['id_user' => $cek->id_user])->row();
+
                     if ($pegawai) {
-                        // Simpan data pegawai dalam session
-                        $this->session->set_userdata([
+                        $peg = [
                             'id_pegawai' => $pegawai->id_pegawai,
                             'id_user'    => $pegawai->id_user,
                             'id_devisi'  => $pegawai->id_devisi,
@@ -44,7 +40,8 @@ class Auth extends CI_Controller {
                             'no_pegawai' => $pegawai->no_pegawai,
                             'alamat'     => $pegawai->alamat,
                             'foto'       => $pegawai->foto
-                        ]);
+                        ];
+                        $this->session->set_userdata($peg);
                     }
 
                     if ($cek->level == 'pimpinan') {

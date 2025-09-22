@@ -7,7 +7,7 @@
                <div class="list-btn">
                   <ul class="filter-list">
                      <li>
-                        <a class="btn btn-primary" href="<?= base_url('admin/absensi/print/') ?>"></i>Print</a>
+                        <a class="btn btn-primary" href="<?= base_url('admin/absensi/print/') ?>" target="_blank">Print</a>
                      </li>
                   </ul>
                </div>

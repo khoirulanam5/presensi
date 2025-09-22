@@ -5,20 +5,12 @@ class Absensi extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->library('form_validation');
-        $this->load->library('session');
-        $this->load->helper('url');
-        $this->load->database();  // Memuat library database
-
-        // Pastikan user sudah login
-        if (!$this->session->userdata('id_user')) {
-            redirect('auth');  // Ganti dengan rute login yang sesuai
-        }
+        $this->load->model(['PresensiModel']);
+        ispegawai();
     }
 
     public function index() {
         $data['title'] = 'Presensi Pegawai';
-        
         // Ambil id_user dari session
         $id_user = $this->session->userdata('id_user');
         

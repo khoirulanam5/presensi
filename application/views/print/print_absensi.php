@@ -138,12 +138,12 @@
     
     <!-- Signature Section -->
     <div class="signature">
-        <?php foreach($absensi as $item): ?>
+        <?php foreach($user as $item): ?>
         <p style="text-align: left;">Kudus, <?= date('d F Y'); ?></p>
         <p style="text-align: left;"><b>KEPALA INSPEKTORAT</b></p>
         <br><br><br>
         <div style="text-align: left; display: inline-block;">
-            <p><b><u>Prof Mega</u></b></p>
+            <p><b><u><?= $item->nm_pengguna; ?></u></b></p>
         </div>
         <?php endforeach; ?>
     </div>

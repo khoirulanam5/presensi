@@ -189,7 +189,6 @@
                <div class="row">
                   <div class="col mb-12">
                      <label for="nameBasic" class="form-label">Nama</label>
-                     <input type="hidden" name="id_user" value="<?= $item->id_user ?>">
                      <input type="text" id="nm_pengguna" name="nm_pengguna" required="" class="form-control" value="<?= $item->nm_pengguna ?>">                           
                      <?= form_error('nm_pengguna', '<small class="text-danger">', '</small>'); ?>
                   </div>
