@@ -5,24 +5,18 @@ class Absensi extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->model(['PresensiModel']);
+        $this->load->model(['PresensiModel', 'LocationModel']);
         ispegawai();
     }
 
     public function index() {
         $data['title'] = 'Presensi Pegawai';
-        // Ambil id_user dari session
-        $id_user = $this->session->userdata('id_user');
         
         // Cek apakah pengguna sudah melakukan absensi hari ini
-        $this->db->where('id_user', $id_user);
-        $this->db->where('DATE(jam_masuk)', date('Y-m-d')); // Cek absensi masuk pada hari ini
-        $absen_masuk = $this->db->get('tb_presensi')->row();
+        $absen_masuk = $this->PresensiModel->cekMasuk()->row();
 
         // Cek apakah pengguna sudah melakukan absensi keluar hari ini
-        $this->db->where('id_user', $id_user);
-        $this->db->where('DATE(jam_keluar)', date('Y-m-d')); // Cek absensi keluar pada hari ini
-        $absen_keluar = $this->db->get('tb_presensi')->row();
+        $absen_keluar = $this->PresensiModel->cekKeluar()->row();
         
         // Menambahkan variabel untuk menonaktifkan tombol
         $data['is_absent_today'] = $absen_masuk ? true : false;
@@ -38,15 +32,13 @@ class Absensi extends CI_Controller {
     public function absensi() {
         // Cek tipe absensi (masuk atau keluar)
         $absensi_type = $this->input->post('absensi_type');
-        
-        $id_user = $this->session->userdata('id_user');
         $current_time = date('Y-m-d H:i:s');
         
         // Ambil data selfie base64
-        $selfie_data = $this->input->post('selfie_data');
+        $selfie = $this->input->post('selfie_data');
         
         // Cek apakah gambar sudah diambil
-        if (empty($selfie_data)) {
+        if (empty($selfie)) {
             $this->session->set_flashdata("pesan","<script> Swal.fire({title:'Maaf', text:'Silakan ambil gambar selfie terlebih dahulu sebelum melakukan absensi.', icon:'warning'})</script>");
             redirect('pegawai/absensi');
             return;
@@ -54,12 +46,12 @@ class Absensi extends CI_Controller {
         
         // Jika tipe absensi adalah "keluar", cek apakah absensi masuk sudah dilakukan pada tanggal yang sama
         if ($absensi_type === 'keluar') {
-            $check_absensi_masuk = $this->db->get_where('tb_presensi', [
-                'id_user' => $id_user,
+            $check_masuk = $this->db->get_where('tb_presensi', [
+                'id_user' => $this->session->userdata('id_user'),
                 'DATE(jam_masuk)' => date('Y-m-d')
             ])->row();
-    
-            if (!$check_absensi_masuk) {
+
+            if (!$check_masuk) {
                 $this->session->set_flashdata("pesan","<script> Swal.fire({title:'Maaf', text:'Anda belum melakukan absensi masuk pada hari ini', icon:'warning'})</script>");
                 redirect('pegawai/absensi');
                 return;
@@ -71,26 +63,25 @@ class Absensi extends CI_Controller {
             $file_path = './assets/img/absensi/' . $file_name;
         
             // Simpan gambar dari data base64
-            $image_data = base64_decode(str_replace(' ', '+', str_replace('data:image/png;base64,', '', $selfie_data)));
-            file_put_contents($file_path, $image_data);
-        
+            $image = base64_decode(str_replace(' ', '+', str_replace('data:image/png;base64,', '', $selfie)));
+            file_put_contents($file_path, $image);
+
             // Simpan data absensi masuk
-            $absensi_data = array(
-                'id_user' => $id_user,
+            $data = array(
+                'id_user' => $this->session->userdata('id_user'),
                 'selfie' => $file_name,
                 'jam_masuk' => $current_time
             );
-            $this->db->insert('tb_presensi', $absensi_data);
-        
+            $this->PresensiModel->save($data);
             $id_presensi = $this->db->insert_id();
         
             // Masukkan lokasi masuk ke tabel tb_location
-            $lokasi_data = array(
+            $lokasi = array(
                 'id_presensi' => $id_presensi,
                 'lokasi_masuk' => 'Jl. Lkr. Utara, Kayuapu Kulon, Gondangmanis, Kec. Bae, Kabupaten Kudus, Jawa Tengah 59327'
             );
-            $this->db->insert('tb_location', $lokasi_data);
-        
+            $this->LocationModel->save($lokasi);
+
             $this->session->set_flashdata("pesan", "<script> Swal.fire({title:'Berhasil', text:'Absensi Masuk Berhasil', icon:'success'})</script>");
         
         } elseif ($absensi_type === 'keluar') {
@@ -98,33 +89,23 @@ class Absensi extends CI_Controller {
             $file_path = './assets/img/absensi/' . $file_name;
         
             // Simpan gambar dari data base64
-            $image_data = base64_decode(str_replace(' ', '+', str_replace('data:image/png;base64,', '', $selfie_data)));
-            file_put_contents($file_path, $image_data);
-        
+            $image = base64_decode(str_replace(' ', '+', str_replace('data:image/png;base64,', '', $selfie)));
+            file_put_contents($file_path, $image);
+
             // Cari ID presensi berdasarkan id_user dan tanggal
-            $this->db->select('id_presensi');
-            $this->db->from('tb_presensi');
-            $this->db->where('id_user', $id_user);
-            $this->db->where('DATE(jam_masuk)', date('Y-m-d'));
-            $query = $this->db->get();
-        
+            $query = $this->PresensiModel->getById();
+
             if ($query->num_rows() > 0) {
                 $id_presensi = $query->row()->id_presensi;
         
                 // Update data absensi keluar di tb_presensi
-                $this->db->set('jam_keluar', $current_time);
-                $this->db->set('selfie_keluar', $file_name);
-                $this->db->where('id_presensi', $id_presensi);
-                $this->db->update('tb_presensi');
+                $this->PresensiModel->edit($current_time, $file_name, $id_presensi);
         
                 // Update lokasi keluar di tb_location
-                $this->db->set('lokasi_keluar', 'Jl. Lkr. Utara, Kayuapu Kulon, Gondangmanis, Kec. Bae, Kabupaten Kudus, Jawa Tengah 59327');
-                $this->db->where('id_presensi', $id_presensi);
-                $this->db->update('tb_location');
+                $this->LocationModel->edit($id_presensi);
         
                 $this->session->set_flashdata("pesan", "<script> Swal.fire({title:'Berhasil', text:'Absensi Keluar Berhasil', icon:'success'})</script>");
             } else {
-                // Jika absensi masuk tidak ditemukan
                 $this->session->set_flashdata("pesan", "<script> Swal.fire({title:'Gagal', text:'Absensi Masuk Tidak Ditemukan', icon:'error'})</script>");
             }
         }        
