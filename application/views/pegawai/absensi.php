@@ -79,7 +79,7 @@
 </div>
 
 <!-- Script untuk Google Maps -->
-<script src="https://maps.googleapis.com/maps/api/js?<?= $this->config->item('google_maps_api_key') ?>&callback=initMap" async defer></script>
+<script src="<?= base_url('application/config/api.php') ?>" async defer></script>
 <script>
    function initMap() {
       const map = new google.maps.Map(document.getElementById("map"), { zoom: 15, mapTypeId: 'roadmap' });
