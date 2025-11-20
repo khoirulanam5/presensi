@@ -1,71 +1,161 @@
-###################
-What is CodeIgniter
-###################
+# 🚀 Aplikasi Presensi Pegawai  
+### *Presensi berbasis Geolocation & Selfie – Role Admin, Pegawai, dan Pimpinan*
 
-CodeIgniter is an Application Development Framework - a toolkit - for people
-who build web sites using PHP. Its goal is to enable you to develop projects
-much faster than you could if you were writing code from scratch, by providing
-a rich set of libraries for commonly needed tasks, as well as a simple
-interface and logical structure to access these libraries. CodeIgniter lets
-you creatively focus on your project by minimizing the amount of code needed
-for a given task.
+Aplikasi ini merupakan sistem presensi pegawai yang dibangun menggunakan **CodeIgniter 3**, dengan fitur utama **presensi berbasis lokasi (geolocation)** serta **verifikasi foto selfie**. Sistem mendukung multi-role (Admin, Pegawai, dan Pimpinan) sehingga pengelolaan data menjadi lebih terstruktur dan modern.
 
-*******************
-Release Information
-*******************
+---
 
-This repo contains in-development code for future releases. To download the
-latest stable release please visit the `CodeIgniter Downloads
-<https://codeigniter.com/download>`_ page.
+## 📌 Fitur Utama
 
-**************************
-Changelog and New Features
-**************************
+### 👤 Pegawai
+- Presensi masuk dan pulang menggunakan **GPS + Selfie**
+- Validasi jarak berdasarkan titik lokasi kantor
+- Histori presensi pribadi
+- Tampilan mobile-friendly
 
-You can find a list of all changes for each release in the `user
-guide change log <https://github.com/bcit-ci/CodeIgniter/blob/develop/user_guide_src/source/changelog.rst>`_.
+### 🧑‍💼 Admin
+- Kelola data pegawai
+- Kelola absensi (approve/reject/edit)
+- Kelola titik lokasi kantor
+- Rekap presensi harian, mingguan, bulanan
+- Export laporan ke PDF/Excel (jika tersedia)
 
-*******************
-Server Requirements
-*******************
+### 🧑‍⚖️ Pimpinan
+- Lihat laporan presensi seluruh pegawai
+- Statistik absensi (grafik dan ringkasan)
+- Monitoring keterlambatan secara real-time
 
-PHP version 5.6 or newer is recommended.
+---
 
-It should work on 5.3.7 as well, but we strongly advise you NOT to run
-such old versions of PHP, because of potential security and performance
-issues, as well as missing features.
+## 🛠️ Teknologi yang Digunakan
 
-************
-Installation
-************
+| Bagian         | Teknologi                       |
+|----------------|----------------------------------|
+| Backend        | CodeIgniter 3                    |
+| Frontend       | HTML, CSS, JavaScript, Bootstrap |
+| Database       | MySQL                            |
+| Geolocation    | HTML5 Geolocation API            |
+| Upload Selfie  | Kamera Browser + File Upload CI  |
 
-Please see the `installation section <https://codeigniter.com/userguide3/installation/index.html>`_
-of the CodeIgniter User Guide.
+---
 
-*******
-License
-*******
+## 📂 Struktur Direktori (Ringkas)
 
-Please see the `license
-agreement <https://github.com/bcit-ci/CodeIgniter/blob/develop/user_guide_src/source/license.rst>`_.
+```
+/application
+    /controllers
+    /models
+    /views
+/assets
+    /css
+    /js
+    /images
+/database
+    presensi.sql
+/uploads
+    /absensi
+```
 
-*********
-Resources
-*********
+---
 
--  `User Guide <https://codeigniter.com/docs>`_
--  `Contributing Guide <https://github.com/bcit-ci/CodeIgniter/blob/develop/contributing.md>`_
--  `Language File Translations <https://github.com/bcit-ci/codeigniter3-translations>`_
--  `Community Forums <http://forum.codeigniter.com/>`_
--  `Community Wiki <https://github.com/bcit-ci/CodeIgniter/wiki>`_
--  `Community Slack Channel <https://codeigniterchat.slack.com>`_
+## 📥 Instalasi & Setup
 
-Report security issues to our `Security Panel <mailto:security@codeigniter.com>`_
-or via our `page on HackerOne <https://hackerone.com/codeigniter>`_, thank you.
+### 1️⃣ Clone Repository
+```bash
+git clone https://github.com/username/nama-project.git
+```
 
-***************
-Acknowledgement
-***************
+### 2️⃣ Pindahkan ke Folder Server Local
+Letakkan pada:
+```
+htdocs/ (XAMPP) atau public_html (hosting)
+```
 
-The CodeIgniter team would like to thank EllisLab, all the
-contributors to the CodeIgniter project and you, the CodeIgniter user.
+### 3️⃣ Import Database
+- Buka **phpMyAdmin**
+- Buat database baru
+- Import file:
+```
+database/presensi.sql
+```
+
+### 4️⃣ Konfigurasi Database
+
+**application/config/database.php**
+```php
+$db['default'] = array(
+    'hostname' => 'localhost',
+    'username' => 'root',
+    'password' => '',
+    'database' => 'presensi',
+    'dbdriver' => 'mysqli'
+);
+```
+
+### 5️⃣ Setting Base URL
+
+**application/config/config.php**
+```php
+$config['base_url'] = 'http://localhost/nama-project/';
+```
+
+---
+
+## 🌍 Pengaturan Geolocation
+
+Agar fitur lokasi berjalan dengan optimal:
+- Pastikan browser mengizinkan akses lokasi
+- GPS aktif (khusus mobile)
+- Gunakan browser modern seperti Chrome/Firefox
+- Koneksi internet stabil
+
+---
+
+## 📸 Mekanisme Foto Selfie
+
+Aplikasi menggunakan kamera perangkat (webcam atau kamera smartphone).  
+Hasil foto otomatis disimpan ke:
+
+```
+/uploads/absensi/
+```
+
+Format file: `.jpg` atau `.png`
+
+---
+
+## 🔐 Akun Login Default
+
+| Role      | Username | Password |
+|-----------|----------|----------|
+| Admin     | admin    | admin    |
+| Pegawai   | pegawai  | pegawai  |
+| Pimpinan  | pimpinan | pimpinan |
+
+> **Segera ganti password setelah login untuk keamanan.**
+
+---
+
+## 📊 Screenshot (Opsional)
+
+Tambahkan screenshot seperti:
+- Halaman presensi
+- Dashboard Admin
+- Statistik presensi
+
+---
+
+## 📝 Lisensi
+
+Project ini bersifat internal dan bebas kamu modifikasi sesuai kebutuhan.
+
+---
+
+## 💡 Kontribusi
+
+Pull request sangat diterima.  
+Jika kamu menemukan bug atau memiliki ide fitur baru, silakan buat *issue*.
+
+---
+
+### ⭐ Jika repo ini membantu, jangan lupa beri **Star** di GitHub!
