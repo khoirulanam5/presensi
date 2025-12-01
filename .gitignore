@@ -32,7 +32,5 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 /tests/results/
 
 # 🔒 Secret config
-application/helpers/user_helper.php
-application/config/database.php
 application/config/api.php
 *.sql
